@@ -2,7 +2,7 @@ from turtle import up
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, CallbackContext
 import datetime
-from TelegramInformationSystem.spy import *
+from spy import *
 
 
 
