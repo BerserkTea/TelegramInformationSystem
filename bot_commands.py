@@ -12,10 +12,10 @@ def greeting_command(update: Update, context: CallbackContext):  #прописа
     update.message.reply_text(f"Let's talk")
     update.message.reply_text(f'Make your choice:\n/time - time right now\n/help - see all functions\n/sum - write two numbers with whitespace')
 
-"""" if user_id in contacts.txt:
+"""" if user_id not in contacts.txt:
         update.message.reply_text(f'Nice to meet you {update.effective_user.first_name}')
         update.message.reply_text(f"/About you - Tell us some words about you?")
-        
+        update.message.reply_text(f"/About our group - !!!!!!!!!Напишу текст")
 """
 
 
