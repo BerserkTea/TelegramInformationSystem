@@ -1,58 +1,99 @@
+from multiprocessing.sharedctypes import Value
+from telegram import Update
+from telegram.ext import Updater, CommandHandler, CallbackContext
 import csv
 
-my_database = [["id", " name", " surname", " username", " city"],
-        ['1', ' Viktoriia', ' Silaeva', ' @SilaevaViktoriia', ' OZ'],
-        ['2', ' Georgy', ' ', ' @GeorgyRus', ' '],
-        ['3', ' Yana', ' ', ' @ZYAZY', ' Mosou'],
-        ['4', ' Alexander', ' Krivoruchko', ' ', 'Taganrog'],
-        ['5', ' Yuri', ' Filatov', ' @Yrafilatov', ' '],
-        ['6', ' Marc', ' Scobelev', ' ', ' '],
-        ['7', ' Ilyas', ' Amirchupanov', ' @ailyas80', ' Astrakhan'],
-        ['8', ' Julia', ' Shurygina',	' @juliawise', ' Moscou'],
-        ['9', ' Konstantin', ' Stepanov', ' @Konstantin_Stepanov_1988',	' Moscou'],
-        ['10', ' Anton', ' Korolev', ' @TonyKorolev', ' Cheboksary'],
-        ['11', ' Julia', ' ', ' ', ' Murmansk'],
-        ['12', ' Ivan', ' Cheremisov',	' @cheremisovIvan', ' '],
-        ['13', ' Dmitry', ' Lopatinsky', ' @obezyanoid', ' Saratov'],
-        ['14', ' Inna', ' ', ' @Shvarchik', ' '], 	
-        ['15', ' Michail',	' Yurkov',	' @YurkovMix',	' '],	
-        ['16', ' Anna', ' Kuchumova',	' ', ' Dmitrov'],
-        ['17', ' Alexandra', ' K',	' ', ' Brest'],
-        ['18', ' Denis', ' ', ' ', ' '], 			
-        ['19', ' John', ' Smith', ' @gramenbos', ' '], 	
-        ['20', ' Anastasiia', ' Venskaiia', ' ', ' Kaluga'],
-        ['21', ' Viktoriia', ' ', ' ', ' '],		
-        ['22', ' Roman', ' Rogachev', ' ', ' Tver'],
-        ['23', ' Dmitryi', ' Spasskich', ' @afinaPalladda', ' '],	
-        ['24', ' Ilya',	' Limakov', ' @Limakov777', ' '],	
-        ['25', ' Pavel', ' Gluchov', ' @CovChEGG', ' Novosibirsk'],
-        ['26', ' Ivan', ' ', ' @Ivantaf', ' '], 	
-        ['27', ' Dmitriy', ' ', ' @Dmitriy_GM',	' Saratov'],
-        ['28', ' Insaf', ' Gimatdinov', ' ', ' '],		
-        ['29', ' Pavel', ' L', ' ', ' '],		
-        ['30', ' Irina', ' Kudriaxa', ' @irina_kudriaxa', ' '],	
-        ['31', ' Evgeniy', ' D', ' @Slonniikk', ' '],
-        ['32', ' Anna', ' ', ' '],			
-        ['33', ' Julia', ' B', ' @yulichka_kram', ' Gelendzhik'],
-        ['34', ' Ivan', ' Andronov', ' @berserktea1', ' Moscou'],
-        ['35', ' Daniil', ' Kobzar', ' @Blaky299', ' '],	
-        ['36', ' Elvira', ' Zagrebneva', ' @ZEN_cher', ' Cherepovets'],
-        ['37', ' Anton', ' Zubarev', ' @My_name_is_vezenie', ' '],	
-        ['38', ' Nadya', ' Gromova', ' @NadyaGromova', ' Moscou'],
-        ['39', ' Anna', ' Kaminskaia', ' @anna_kami_rnd', ' Rostov-na-Donu'],
-        ['40', ' Anna', ' ', ' @Gerald_0f_Rivia', ' Krasnodar'],
-        ['41', ' Sergey', ' Petryakov', ' @Petryakov_sergey', ' '],	
-        ['42', ' Denis', ' Viscount', ' @viscountKender', ' '],	
-        ['43', ' Ivan', ' ', ' @Ivanw16', ' '],	
-        ['44', ' Roman', ' ', ' @RamTGM', ' '],	
-        ['45', ' Q', ' ', ' @okeybutwhy', ' '],	
-        ['46', ' B.B.K.', ' ',	' ', ' '],		
-        ['47', ' Shavkat', ' Nasimov', ' @Nasimoffffff', 'Moscou'],
-        ['48', ' Sergey', ' Kamyanetsky', ' @ksergeyru', ' Moscou']]
+my_database = [['Viktoriia', 'Silaeva', '@SilaevaViktoriia', 'OZ'],
+        ['Georgy', ' ', '@GeorgyRus', ' '],
+        ['Yana', ' ', '@ZYAZY', 'Mosou'],
+        ['Alexander', 'Krivoruchko', ' ', 'Taganrog'],
+        ['Yuri', 'Filatov', '@Yrafilatov', ' '],
+        ['Marc', 'Scobelev', ' ', ' '],
+        ['Ilyas', 'Amirchupanov', '@ailyas80', 'Astrakhan'],
+        ['Julia', 'Shurygina',	'@juliawise', 'Moscou'],
+        ['Konstantin', 'Stepanov', '@Konstantin_Stepanov_1988',	'Moscou'],
+        ['Anton', 'Korolev', '@TonyKorolev', 'Cheboksary'],
+        ['Julia', ' ', ' ', 'Murmansk'],
+        ['Ivan', 'Cheremisov',	'@cheremisovIvan', ' '],
+        ['Dmitry', 'Lopatinsky', '@obezyanoid', 'Saratov'],
+        ['Inna', ' ', '@Shvarchik', ' '], 	
+        ['Michail',	'Yurkov', '@YurkovMix',	' '],	
+        ['Anna', 'Kuchumova', ' ', 'Dmitrov'],
+        ['Alexandra', 'K',	' ', 'Brest'],
+        ['Denis', ' ', ' ', ' '], 			
+        ['John', 'Smith', '@gramenbos', ' '], 	
+        ['Anastasiia', 'Venskaiia', ' ', 'Kaluga'],
+        ['Viktoriia', ' ', ' ', ' '],		
+        ['Roman', 'Rogachev', ' ', 'Tver'],
+        ['Dmitryi', 'Spasskich', '@afinaPalladda', ' '],	
+        ['Ilya', 'Limakov', '@Limakov777', ' '],	
+        ['Pavel', 'Gluchov', '@CovChEGG', 'Novosibirsk'],
+        ['Ivan', ' ', '@Ivantaf', ' '], 	
+        ['Dmitriy', ' ', '@Dmitriy_GM',	'Saratov'],
+        ['Insaf', 'Gimatdinov', ' ', ' '],		
+        ['Pavel', 'L', ' ', ' '],		
+        ['Irina', 'Kudriaxa', '@irina_kudriaxa', ' '],	
+        ['Evgeniy', 'D', '@Slonniikk', ' '],
+        ['Anna', ' ', ' '],			
+        ['Julia', 'B', '@yulichka_kram', 'Gelendzhik'],
+        ['Ivan', 'Andronov', '@berserktea1', 'Moscou'],
+        ['Daniil', 'Kobzar', '@Blaky299', ' '],	
+        ['Elvira', 'Zagrebneva', '@ZEN_cher', 'Cherepovets'],
+        ['Anton', 'Zubarev', '@My_name_is_vezenie', ' '],	
+        ['Nadya', 'Gromova', '@NadyaGromova', 'Moscou'],
+        ['Anna', 'Kaminskaia', '@anna_kami_rnd', 'Rostov-na-Donu'],
+        ['Anna', ' ', '@Gerald_0f_Rivia', 'Krasnodar'],
+        ['Sergey', 'Petryakov', '@Petryakov_sergey', ' '],	
+        ['Denis', 'Viscount', '@viscountKender', ' '],	
+        ['Ivan', ' ', '@Ivanw16', ' '],	
+        ['Roman', ' ', '@RamTGM', ' '],	
+        ['Q', ' ', '@okeybutwhy', ' '],	
+        ['B.B.K.', ' ',	' ', ' '],		
+        ['Shavkat', 'Nasimov', '@Nasimoffffff', 'Moscou'],
+        ['Sergey', 'Kamyanetsky', '@ksergeyru', 'Moscou']]
 
-my_file = open('database.csv', 'w', encoding='UTF-8')
-with my_file:
-    writer = csv.writer(my_file)
-    writer.writerows(my_database)
-print("Oh, well done, mate") 
-print(my_database)   
+k = 1
+dict_database = {}
+for i in my_database:
+    dict_database[k] = i
+    k+=1
+print(dict_database[5])
+
+def index():
+    with open('database.csv', newline='', encoding='UTF-8') as f:
+        reader = csv.reader(f)
+        data = list(reader)
+        index = len(data) + 1
+        return index
+
+
+# for j in dict_database: 
+with open('database.csv', 'w', encoding='UTF-8') as my_file:
+    for key, v in dict_database.items():
+        my_file.write("{}; {}\n".format(key, v))
+#         # writer = csv.writer(my_file)
+#           writer.writerows(dict_database)
+# print("Oh, well done, mate") 
+#     # print(dict_database)   
+
+# username = Update.effective_user.first_name
+
+def write_user():
+    id = index()
+    name = "kjlk"
+    surname = "kffd"
+    username = "oijh"
+    city = "uhgn"
+    with open('database.csv', 'a', encoding='UTF-8') as wu:
+        writer = csv.writer(wu)
+        wu.write(f'{id};{name},{surname},{username},{city}')
+        wu.write(f'\n')
+# write_user()
+
+# def write_to_file():
+#     id = ui_f.id()
+#     name = ui_f.username()
+#     surname = ui_f.surname()
+#     phone_number = ui_f.phone()
+#     comment = ui_f.comments()
+       
