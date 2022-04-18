@@ -1,8 +1,11 @@
 from turtle import up
-from telegram import Update
+from telegram import Update, PhotoSize, TelegramObject
 from telegram.ext import Updater, CommandHandler, CallbackContext
 import datetime
 from spy import *
+from glob import glob
+from random import choice
+
 
 def greeting_command(update: Update, context: CallbackContext):  #прописать потом условие, что, если участник вновь прибывший, то привествие и знакомство другое
     log(update,context)
@@ -18,7 +21,7 @@ def greeting_command(update: Update, context: CallbackContext):  #прописа
 
 def help_command(update: Update, context: CallbackContext):
     log(update,context)
-    update.message.reply_text(f'/start\n/time\n/help\n/sum\n/link')
+    update.message.reply_text(f'/start\n/time\n/help\n/sum\n/link\n/memes')
 
 def time_command(update: Update, context: CallbackContext):
     log(update,context)
@@ -39,3 +42,7 @@ def get_text_message (update: Update, context: CallbackContext):
     else:
           update.message.reply_text(f'right choice')
 
+def photo_command (update: Update, context: CallbackContext):
+    list= glob('images/*')
+    picture = choice(list)
+    update.message.reply_photo(photo = open(picture, 'rb'))   
